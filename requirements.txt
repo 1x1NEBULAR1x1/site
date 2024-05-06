@@ -5,3 +5,4 @@ aiogram~=3.4.1
 fastapi~=0.110.2
 starlette~=0.37.2
 SQLAlchemy~=2.0.28
+aiosqlite~=0.20.0
