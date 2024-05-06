@@ -84,7 +84,7 @@ async def my_link(call: CallbackQuery, db: DataBase):
     text, requestss = 'Ваши ссылки:\n\n', []
     for key in keys:
         requests, total = await db.get_requests_by_key(key=key.key), 0
-        text += f'Ссылка: <code>https://{HOST}/{key.key}/</code>'
+        text += f'Ссылка: <code>https://{HOST[1]}/?key={key.key}</code>'
         if requests:
             requestss.append(requests)
             for request in requests:
@@ -94,7 +94,7 @@ async def my_link(call: CallbackQuery, db: DataBase):
 @callbacks.callback_query(F.data == 'create_link')
 async def create_link(call: CallbackQuery, db: DataBase):
     key = await db.add_key(owner_id=call.message.chat.id)
-    await call.message.edit_text(text=f'Ссылка создана\nСсылка: <code>https://{HOST}/{key}/</code>',
+    await call.message.edit_text(text=f'Ссылка создана\nСсылка: <code>https://{HOST[1]}/?key={key}</code>',
                                  reply_markup=await kb.back_to_links())
 
 '''
@@ -217,7 +217,7 @@ async def a_user_requests(call: CallbackQuery, db: DataBase):
         requests, total = await db.get_requests_by_key(key=key.key), 0
         for request in requests:
             total += request.price
-        text += f'Ссылка: {key.key}\nВсего заявок: {len(requests)}\nОбщая сумма: {total}\n\n'
+        text += f'Ссылка: F{key.key}\nВсего заявок: {len(requests)}\nОбщая сумма: {total}\n\n'
     if len(text) > 4096:
         text = text[:4096]
     await call.message.edit_text(text=text, reply_markup=await kb.a_back_to_user(user_id=user_id))

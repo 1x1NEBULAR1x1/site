@@ -20,8 +20,6 @@ app.add_middleware(CORSMiddleware,
                    allow_methods=["*"],
                    allow_headers=["*"])
 
-app.add_middleware
-
 
 @app.post('/')
 async def send(departure_value: Annotated[str, Form()],

@@ -28,8 +28,11 @@ async def bot_def():
     finally:
         await bot.close()
 async def api_def():
-    config = uvicorn.Config('api:app', port=8000, host='localhost', ssl_keyfile='pem/key.pem',
-                            ssl_certfile='pem/certificate.pem')
+    config = uvicorn.Config('api:app', port=8000, host='localhost')
+    server = uvicorn.Server(config)
+    await server.serve()
+async def proxy_def():
+    config = uvicorn.Config('proxy:app', port=8001, host='localhost')
     server = uvicorn.Server(config)
     await server.serve()
 
@@ -38,6 +41,7 @@ if __name__ == '__main__':
         loop = asyncio.new_event_loop()
         loop.create_task(bot_def())
         loop.create_task(api_def())
+        loop.create_task(proxy_def())
         loop.run_forever()
     except (KeyboardInterrupt, SystemExit):
         pass

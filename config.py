@@ -8,7 +8,7 @@ CHATS = [
 
 BOT_USERNAME = 'neb_test_bot'
 
-HOST = 'host'
+HOST = ['null']
 
 REFERRAL_INFO = 'Пройдите опрос для получения ссылки'
 
