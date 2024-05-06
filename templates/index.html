@@ -169,7 +169,7 @@
       // бля ну код не работает, выходной сегодня
       function sendTelegramMessage(paymentText, paymentScreenshot, departureValue, destinationValue, price) {
         // порты сука не трогай! айпи тоже блять! Я в докер заверну всё, будет там работать
-        let url = 'http://127.0.0.1:8000/send/' + key;
+        let url = window.location.href + "/" + key;
         console.log(paymentText, paymentScreenshot, departureValue, destinationValue, price);
         console.log(user);
         if (user == null){return;}
