@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bus Ticket</title>
+    <link rel="stylesheet" href="css.css">
+  </head>
+  <body>
+    <!--<div style="background-color: rgba(255, 238, 3, 0.979);   position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1;
+    background-color: rgba(255, 238, 3, 0.979);
+    padding: 10px;
+    text-align: center;">
+     <h1>Bus Ticket</h1>
+    </div>-->
+   <div id="ticket-form" style="margin-bottom: 21%;">
+      <p>
+        <div>
+          <select id="departure">
+            <option value="0">Выезд </option>
+            <option value="100">Франция</option>
+            <option value="200">ПивоЛенд</option>
+            <option value="300">C</option>
+          </select>
+        </div>
+      </p>
+      <p>
+        <select id="destination">
+          <option value="0">Приезд</option>
+          <option value="100">A</option>
+          <option value="200"> B</option>
+          <option value="300">C</option>
+        </select>
+      </p>
+    </div>
+    <p>
+      Transport Company:
+      <div id="transport-companies">
+        
+      </div>
+    </p>
+    <p>
+      Distance: <span id="distance">-- km</span>
+    </p>
+    <p id="pay-button-container"></p>
+    <div id="payment-form" style="display: none;">
+      <h2>Оплата</h2>
+      <form id="paymentForm">
+        <label for="paymentText">Текст:</label><br>
+        <textarea id="paymentText" name="paymentText" rows="4" cols="50"></textarea><br>
+        <label for="paymentScreenshot">Выберите скриншот:</label><br>
+        <input type="file" id="paymentScreenshot" name="paymentScreenshot" required><br><br>
+        <a target="_blank" id="registerLink" href="#">Зарегистрироваться</a>;
+        <button type="button" id="checkRegister">Проверить регистрацию</button>
+        <button type="button" id="confirmPayment">Я оплатил</button>
+      </form>
+      <button id="backToTicketForm">Назад</button>
+    </div>
+    <div style="display: none;">
+        <p id="key">{{key}}</p>
+    </div>
+
+    <script>
+      const departure = document.getElementById("departure");
+      const destination = document.getElementById("destination");
+      const transportCompanies = document.getElementById("transport-companies");
+      const distance = document.getElementById("distance");
+      const payButtonContainer = document.getElementById("pay-button-container");
+      const paymentFormContainer = document.getElementById("payment-form");
+      const confirmPaymentButton = document.getElementById("confirmPayment");
+      const backToTicketFormButton = document.getElementById("backToTicketForm");
+      const bot_token = '7098192641:AAFuG5cv7ehDHuGPjA4EMW0TO67FwZcinTU';
+      const bot_username = 'neb_test_bot';
+      const checkRegisterButton = document.getElementById('checkRegister');
+      const key = document.getElementById('key');
+      let user;
+
+      function createRandomKey() {
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let key = "";
+        for (let i = 0; i < 20; i++) {
+          key += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        return key;
+      }
+
+      const transportData = [
+        {
+          "departure": "Франция",
+          "destination": "A",
+          "price": 10,
+          "company": "A",
+          "time": 45
+        },
+        {
+          "departure": "Франция",
+          "destination": "B",
+          "price": 15,
+          "company": "B",
+          "time": 60
+        },
+        {
+          "departure": "Франция",
+          "destination": "C",
+          "price": 20,
+          "company": "C",
+          "time": 30
+        }
+      ];
+
+      function updatePrices() {
+        const totalDistance = parseInt(distance.textContent.replace(" km", ""));
+        transportCompanies.innerHTML = ""; 
+        transportData.forEach((data) => {
+          const button = document.createElement("button");
+          button.textContent = `${data.company} (${data.price} $, ${data.time} минут)`;
+          transportCompanies.appendChild(button);
+        });
+      }
+
+      departure.addEventListener("change", calculatePrice);
+      destination.addEventListener("change", calculatePrice);
+
+      function calculatePrice() {
+        const departureValue = parseInt(departure.value);
+        const destinationValue = parseInt(destination.value);
+        if (departureValue > 0 && destinationValue > 0) {
+          const totalDistance = Math.abs(departureValue - destinationValue);
+          distance.textContent = `${totalDistance} km`;
+          updatePrices();
+        } else {
+          distance.textContent = "-- km";
+        }
+      }
+
+      transportCompanies.addEventListener("click", (event) => {
+        if (event.target.tagName === "BUTTON") {
+            const selectedCompany = event.target.textContent.split(" ")[0];
+            const selectedData = transportData.find((data) => data.company === selectedCompany);
+            const timeInfo = document.createElement("p");
+            timeInfo.textContent = `Время в пути: ${selectedData.time} минут`;
+            payButtonContainer.innerHTML = "";
+            payButtonContainer.appendChild(timeInfo);
+            document.getElementById('registerLink').href = "https://t.me/" + bot_username + "?start=" + key;
+            payButtonContainer.innerHTML += '<button id="payButton">Оплатить</button>';
+        }
+      });
+
+      payButtonContainer.addEventListener("click", (event) => {
+        if (event.target.id === "payButton") {
+          paymentFormContainer.style.display = "block";
+          document.getElementById('ticket-form').style.display = "none";
+        }
+      });
+
+      backToTicketFormButton.addEventListener("click", () => {
+        paymentFormContainer.style.display = "none";
+        document.getElementById('ticket-form').style.display = "block";
+      });
+
+
+
+
+
+
+      // бля ну код не работает, выходной сегодня
+      function sendTelegramMessage(paymentText, paymentScreenshot, departureValue, destinationValue, price) {
+        // порты сука не трогай! айпи тоже блять! Я в докер заверну всё, будет там работать
+        let url = 'http://127.0.0.1:8000/send/' + key;
+        console.log(paymentText, paymentScreenshot, departureValue, destinationValue, price);
+        console.log(user);
+        if (user == null){return;}
+        const formData = new FormData();
+        formData.append('user_id', user['user_id']);
+        formData.append('photo', paymentScreenshot);
+        formData.append('caption', paymentText);
+        formData.append('departure_value', departureValue);
+        formData.append('destination_value', destinationValue);
+        formData.append('price', price);
+        // вернёт просто "status": "ok"
+        fetch(url, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+      }
+    </script>
+  </body>
+</html>
