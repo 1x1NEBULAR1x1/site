@@ -28,7 +28,7 @@ async def bot_def():
     finally:
         await bot.close()
 async def api_def():
-    config = uvicorn.Config('api:app', port=8000, host='localhost')
+    config = uvicorn.Config('api:app', port=80, host='0.0.0.0')
     server = uvicorn.Server(config)
     await server.serve()
 
